@@ -1,14 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const {graphqlHTTP} = require('express-graphql');
+const schema = require('./schema/schema');
+const cors = require('cors');
 
 const app = express();
 const PORT = 3000;
 
-mongoose.connect('mongodb+srv://Mrrob:Misha1234321@cluster0.muqng.mongodb.net/server_starterPack?retryWrites=true&w=majority',{
+mongoose.connect('mongodb+srv://Mrrob:Misha1234321@cluster0.muqng.mongodb.net/test_server?retryWrites=true&w=majority',{
     useUnifiedTopology: true,
     useNewUrlParser: true,
     useFindAndModify: false,
 });
+
+app.use(cors());
+
+app.use('/', graphqlHTTP({
+    schema,
+    graphiql: true,
+}));
 
 const dbConnection = mongoose.connection;
 dbConnection.on('error', err => console.log(`Connection error: ${err}`));
