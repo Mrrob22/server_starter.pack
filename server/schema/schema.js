@@ -4,6 +4,7 @@ const {
     GraphQLString,
     GraphQLSchema,
     GraphQLList,
+    GraphQLNonNull,
 } = require('graphql');
 
 const Workers = require('../models/worker');
@@ -16,14 +17,20 @@ const WorkerType = new GraphQLObjectType({
             type: GraphQLID,
         },
         firstName: {
-            type: GraphQLString,
+            type: new GraphQLNonNull(GraphQLString),
         },
         secondName: {
             type: GraphQLString,
         },
         lastName: {
-            type: GraphQLString,
+            type: new GraphQLNonNull(GraphQLString),
         },
+        tank: {
+            type: TankType,
+            resolve(parent, args){
+                return parent.tankId ? Tanks.findById(parent.tankId): null;
+            }
+        }
     }),
 });
 
@@ -34,14 +41,17 @@ const TankType = new GraphQLObjectType({
             type: GraphQLID,
         },
         model: {
-            type: GraphQLString,
+            type: new GraphQLNonNull(GraphQLString),
         },
         className: {
-            type: GraphQLString,
+            type: new GraphQLNonNull(GraphQLString),
         },
         nation: {
-            type: GraphQLString,
+            type: new GraphQLNonNull(GraphQLString),
         },
+        // worker: {
+        //     type: GraphQLString,
+        // }
     }),
 });
 
@@ -58,12 +68,16 @@ const Query = new GraphQLObjectType({
             type: WorkerType,
             args: {id: {type: GraphQLID}},
             resolve(parent, args){
-                return Workers.findById(args.id)
+                return Workers.findById(args.id);
             }
         },
         workerByFirstName: {
             type: new GraphQLList(WorkerType),
-            args: {firstName: {type: GraphQLString}},
+            args: {
+                firstName: {
+                    type: GraphQLString
+                }
+            },
             resolve(parent, args){
                 return Workers.find({
                     firstName: args.firstName,
@@ -129,13 +143,13 @@ const Mutation = new GraphQLObjectType({
             type: WorkerType,
             args: {
                 firstName: {
-                    type: GraphQLString,
+                    type: new GraphQLNonNull(GraphQLString),
                 },
                 secondName: {
                     type: GraphQLString,
                 },
                 lastName: {
-                    type: GraphQLString,
+                    type: new GraphQLNonNull(GraphQLString),
                 },
             },
             resolve(parent, args){
@@ -155,13 +169,13 @@ const Mutation = new GraphQLObjectType({
                     type: GraphQLID,
                 },
                 firstName: {
-                    type: GraphQLString,
+                    type: new GraphQLNonNull(GraphQLString),
                 },
                 secondName: {
                     type: GraphQLString,
                 },
                 lastName: {
-                    type: GraphQLString,
+                    type: new GraphQLNonNull(GraphQLString),
                 },
             },
             resolve(parent, args){
